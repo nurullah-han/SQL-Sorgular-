@@ -1,0 +1,104 @@
+-- Veri Doğrulama: ÇEK, EŞSİZ, VARSAYILAN Kısıtlamaları hakkın da örnek SQL kodları:
+
+--1. CHECK ile yaş doğrulamaları örneği:
+TABLO OLUŞTUR Ogrenci (
+ OgrenciID INT KİMLİK(1,1) BİRİNCİL ANAHTAR,
+ Reklam NVARCHAR(50),
+ Yas INT KONTROLÜ (Yas >= 17)
+);
+
+--2. EŞSİZ ile öğrenci numarası kontrolü örneği:
+TABLO OLUŞTUR Kayıt (
+ Kayıtid INT IDENTITY(1,1) BİRİNCİL ANAHTAR,
+ OgrenciNo NVARCHAR(20) EŞSİZ
+);
+
+--3. VARSAYILAN ile kayıt tarihi tanımlama örneği:
+TABLO OLUŞTUR Basvuru (
+ BasvuruID INT KİMLİĞİ(1,1) BİRİNCİL ANAHTAR,
+ BasvuruTarihi TARİH VARSAYILAN GETDATE ()
+);
+
+--4. CHECK ile maaş doğrulamaları örneği:
+TABLO OLUŞTUR Personeli (
+ Personelid INT KİMLİĞİ(1,1) BİRİNCİL ANAHTAR,
+ AdSoyad NVARCHAR(100),
+ Maas INT KONTROLÜ (Maas 8500 İLE 100000 ARASINDA)
+);
+
+--5. EŞSİZ ile telefon numarası eşsizliği örneği:
+TABLO OLUŞTUR Musteri (
+ MusteriID INT KİMLİK(1,1) BİRİNCİL ANAHTAR,
+ Telefon NVARCHAR(15) EŞSİZ
+);
+
+--6. DEFAULT ile varsayılan kullanıcı rolu örneği:
+TABLO OLUŞTUR Kullanici (
+ KullaniciID INT KİMLİK(1,1) BİRİNCİL ANAHTAR,
+ KullaniciAdi NVARCHAR(50),
+ Rol NVARCHAR(20) VARSAYILAN 'Evet'
+);
+
+--7. CHECK ile not aralığı kontrolü örneği:
+TABLO Notları OLUŞTURUN (
+ NOTID INT IDENTITY(1,1) BIRINCIL ANAHTAR,
+ Vize INT KONTROLÜ (Vize 0 ILE 100 ARASINDA),
+ Son INT KONTROLÜ (Nihai 0 İLE 100 ARASINDA)
+);
+
+--8. DEFAULT ile varsayılan aktiflik durumu örneği:
+TABLO OLUŞTURUN Abone (
+ AboneID INT IDENTITY(1,1) BIRINCIL ANAHTAR,
+ AdSoyad NVARCHAR(100),
+ Aktif BIT VARSAYILAN 1
+);
+
+--9. EŞSİZ ile kimlik numarası kontrolü örneği:
+TABLO Vatandaları OLUŞTURUN (
+ TCKN CHAR(11) BENZERSIZ,
+ AdSoyad NVARCHAR(100)
+);
+
+--10. CHECK ile e-posta uzunluk kontrolü örneği:
+TABLO OLUŞTUR İletişim (
+ IletisimID INT KİMLİĞİ(1,1) BİRİNCİL ANAHTAR,
+ Eposta NVARCHAR(100) KONTROL (LEN(Eposta) >= 5)
+);
+
+
+--OrderServiceImpl sınıfına ait stored procedure işlemleri:
+
+--1- Ürün stok adedini kontrolü:
+PROSEDÜR OLUŞTUR CheckStock
+ @ProductID INT
+OLARAK
+BAŞLAMAK
+ Ürün Kimliğin Bulunduğu Ürünlerden Stok Seçiniz = @ProductID;
+OĞLUM;
+
+--2- Ürün satıldıktan sonra stok miktarını azaltan:
+PROSEDÜR OLUŞTURUN ReduceStock
+ @ProductID INT,
+ @Quantity INT
+OLARAK
+BAŞLAMAK
+ UPDATE Ürünleri
+ SET Stok = Stok - @Quantity
+ WHERE ProductID = @ProductID VE Stock >= @Quantity;
+OĞLUM;
+
+
+--3- Sipariş oluşturulduysa tebliği bilgisini sıkaran:
+PROSEDÜR OLUŞTUR SiparişBildirim
+ @OrderID INT
+OLARAK
+BAŞLAMAK
+ @UserID INT'yi BİLDİRİN;
+ @UserID = UserID'i Siparişlerin Neresinden SEÇİN OrderID = @OrderID;
+
+ @UserID NULL DEĞİLSE
+ PRINT 'Sipariş oluşturuldu. Kullanıcıya bildirim gönderildi.';
+ BAŞKA
+ YAZDIR 'Sipariş bulunamadı.';
+OĞLUM;
+
